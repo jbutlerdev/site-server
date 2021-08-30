@@ -1,0 +1,31 @@
+version: "3"
+services:
+  nginx-proxy:
+    container_name: tlsproxy
+    restart: always
+    image: jwilder/nginx-proxy
+    networks:
+      - proxy-external
+      - proxy-internal
+    ports:
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /certs:/etc/nginx/certs:ro
+
+  nginx:
+    container_name: nginx
+    restart: always
+    image: react-app
+    environment:
+      - VIRTUAL_HOST=jbutler.dev
+      - VIRTUAL_PORT=80
+    expose:
+      - "80"
+    networks:
+      - proxy-internal
+
+networks:
+  proxy-external: {}
+  proxy-internal: {}
+
